@@ -23,8 +23,8 @@
 	</properties>
 
 	<scm>
-		<connection>scm:git:git://github.com/anthavio/anthavio-dao.git</connection>
-		<developerConnection>scm:git:git@github.com:anthavio/anthavio-dao.git</developerConnection>
+		<connection>scm:git:git://github.com/anthavio/anthavio-dao</connection>
+		<developerConnection>scm:git:git@github.com:anthavio/anthavio-dao</developerConnection>
 		<url>https://github.com/anthavio/anthavio-dao</url>
 	</scm>
 
