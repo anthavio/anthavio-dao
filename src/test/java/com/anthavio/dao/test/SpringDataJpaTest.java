@@ -3,7 +3,7 @@
  */
 package com.anthavio.dao.test;
 
-import static org.fest.assertions.Assertions.assertThat;
+import static org.fest.assertions.api.Assertions.assertThat;
 
 import javax.inject.Inject;
 
@@ -20,10 +20,9 @@ import com.anthavio.dao.test.sdao.AddressSdjDao;
 import com.anthavio.dao.test.sdao.EmployeeSdjDao;
 import com.anthavio.dao.test.sdao.PhoneSdjDao;
 
-
 /**
  * @author vanek
- *
+ * 
  */
 @ContextConfiguration("classpath:spring-test.xml")
 public class SpringDataJpaTest extends AbstractTestNGSpringContextTests {

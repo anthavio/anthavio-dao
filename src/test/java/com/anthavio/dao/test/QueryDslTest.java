@@ -1,6 +1,6 @@
 package com.anthavio.dao.test;
 
-import static org.fest.assertions.Assertions.assertThat;
+import static org.fest.assertions.api.Assertions.assertThat;
 
 import java.util.Date;
 import java.util.List;
@@ -41,7 +41,7 @@ import com.mysema.query.types.path.SimplePath;
 
 /**
  * @author vanek
- *
+ * 
  */
 @ApiPolicyOverride
 public class QueryDslTest extends BaseJpaTest {
@@ -51,7 +51,7 @@ public class QueryDslTest extends BaseJpaTest {
 	public void testEntityFetchJoin() {
 		Integer orderId = (Integer) em.createQuery("SELECT min(o.id) FROM Order o").getSingleResult();
 
-		//select without joining lazy load Employee and Items
+		// select without joining lazy load Employee and Items
 		Query query = em.createQuery("SELECT o FROM Order o WHERE o.id = ?1");
 		List<Order> list = query.setParameter(1, orderId).getResultList();
 		assertThat(list.size()).isEqualTo(1);
@@ -61,17 +61,17 @@ public class QueryDslTest extends BaseJpaTest {
 			order.getItems().size();
 			Assert.fail("This should throw LazyInitializationException");
 		} catch (LazyInitializationException lix) {
-			//ok
+			// ok
 		}
 
 		try {
 			order.getEmployee().getFirstName();
 			Assert.fail("This should throw LazyInitializationException");
 		} catch (LazyInitializationException lix) {
-			//ok
+			// ok
 		}
 
-		//JOIN FETCH lazy load employee
+		// JOIN FETCH lazy load employee
 		query = em.createQuery("SELECT o FROM Order o JOIN FETCH o.employee WHERE o.id = ?1");
 		list = query.setParameter(1, orderId).getResultList();
 		assertThat(list.size()).isEqualTo(1);
@@ -80,33 +80,33 @@ public class QueryDslTest extends BaseJpaTest {
 			order.getItems().size();
 			Assert.fail("This should throw LazyInitializationException");
 		} catch (LazyInitializationException lix) {
-			//ok
+			// ok
 		}
 		assertThat(order.getEmployee().getFirstName()).isNotNull()
 				.overridingErrorMessage("Order has Employee fetch joined");
 
-		//simple SELECT COUNT
+		// simple SELECT COUNT
 		query = em.createQuery("SELECT COUNT(o) FROM Order o WHERE o.id = ?1");
 		Long count = (Long) query.setParameter(1, orderId).getSingleResult();
-		assertThat(count).isEqualTo(1L); //easy
+		assertThat(count).isEqualTo(1L); // easy
 
-		//COUNT and JOIN makes sense again
+		// COUNT and JOIN makes sense again
 		query = em.createQuery("SELECT COUNT(o) FROM Order o JOIN o.employee WHERE o.id = ?1");
 		count = (Long) query.setParameter(1, orderId).getSingleResult();
-		assertThat(count).isEqualTo(1L); //easy
+		assertThat(count).isEqualTo(1L); // easy
 
-		//COUNT and JOIN FETCH does not make sense
+		// COUNT and JOIN FETCH does not make sense
 		try {
 			query = em.createQuery("SELECT COUNT(o) FROM Order o JOIN FETCH o.employee WHERE o.id = ?1");
 		} catch (IllegalArgumentException iax) {
 			assertThat(iax.getMessage()).contains("owner of the fetched association was not present");
 		} catch (InvalidDataAccessApiUsageException idux) {
-			//spring exception transformed
+			// spring exception transformed
 			assertThat(idux.getMessage()).contains("owner of the fetched association was not present");
 		}
 
-		//QueryDslSearch search is clever and strips fetches from count select 
-		//and returns them back in data select
+		// QueryDslSearch search is clever and strips fetches from count select
+		// and returns them back in data select
 		QueryDslSearch search = new QueryDslSearch(em);
 		QOrder qo = QOrder.order;
 		search.from(qo);
@@ -116,12 +116,12 @@ public class QueryDslTest extends BaseJpaTest {
 		PagedResult<Order> result = search.listAllPaged(qo, pc);
 		assertThat(result.getResults().size()).isEqualTo(1);
 		assertThat(result.getTotal()).isEqualTo(1L);
-		//assertThat("Results", result.getResults().size(), equalTo(1));
-		//assertThat("Count", result.getTotal(), equalTo(1L));
+		// assertThat("Results", result.getResults().size(), equalTo(1));
+		// assertThat("Count", result.getTotal(), equalTo(1L));
 	}
 
 	/**
-	 * Completely custom query 
+	 * Completely custom query
 	 */
 	public static <T> List<T> findCustom(EntityManager em, Class<T> entityClass, Map<String, ?> filters, String sort) {
 		EntityPath<T> entityPath = new EntityPathBase<T>(entityClass, "entity");
@@ -139,11 +139,11 @@ public class QueryDslTest extends BaseJpaTest {
 	@SuppressWarnings("unchecked")
 	@Test
 	public void testCollectionFetchJoin() {
-		//http://stackoverflow.com/questions/592825/jpa-please-help-understanding-join-fetch/592926#592926
+		// http://stackoverflow.com/questions/592825/jpa-please-help-understanding-join-fetch/592926#592926
 
 		Integer orderId = (Integer) em.createQuery("SELECT min(o.id) FROM Order o").getSingleResult();
 
-		//collection fetch without select distinct -> multiple root is in result
+		// collection fetch without select distinct -> multiple root is in result
 		String jpaQl = "SELECT o FROM Order o JOIN FETCH o.items" //
 				+ " WHERE o.id = ?1";
 		Query query = em.createQuery(jpaQl).setParameter(1, orderId);
@@ -154,14 +154,14 @@ public class QueryDslTest extends BaseJpaTest {
 		Order order = list.get(0);
 		assertThat(order.getItems().size()).isEqualTo(2).overridingErrorMessage("Order has 2 Items");
 
-		//collection fetch without select distinct with QueryDslSearch
+		// collection fetch without select distinct with QueryDslSearch
 		QOrder qo = QOrder.order;
 		QueryDslSearch search = new QueryDslSearch(em);
 		search.from(qo);
 		search.joinFetch(qo.items);
 		search.eq(qo.id, orderId);
 		PagedCriteria pc = new PagedCriteria();
-		PagedResult<Order> result = search.listPaged(qo, pc); //no distinct
+		PagedResult<Order> result = search.listPaged(qo, pc); // no distinct
 
 		assertThat(result.getResults().size()).isEqualTo(2).overridingErrorMessage(
 				"Without DISTINCT duplicity should be returned");
@@ -172,13 +172,13 @@ public class QueryDslTest extends BaseJpaTest {
 
 	@Test
 	public void testComplexFetchJoins() {
-		//use DISTINCT
-		String jpaQl = "SELECT DISTINCT e FROM Employee e"// 
+		// use DISTINCT
+		String jpaQl = "SELECT DISTINCT e FROM Employee e"//
 				+ " JOIN FETCH e.address" //
-				+ " JOIN FETCH e.manager"// 
+				+ " JOIN FETCH e.manager"//
 				+ " JOIN FETCH e.phones"//
 				+ " JOIN FETCH e.computers"//
-				+ " JOIN FETCH e.projects" // 
+				+ " JOIN FETCH e.projects" //
 				+ " JOIN FETCH e.examinations" //
 				+ " WHERE e.id = ?1";
 		Query query = em.createQuery(jpaQl);
@@ -204,30 +204,32 @@ public class QueryDslTest extends BaseJpaTest {
 
 	@Test
 	public void testCompositePkCount() {
-		Query query = em.createQuery("SELECT COUNT(*) FROM Phone p"); //COUNT(*) umi jen hibernate
+		Query query = em.createQuery("SELECT COUNT(*) FROM Phone p"); // COUNT(*)
+																																	// umi jen
+																																	// hibernate
 		Long count = (Long) query.getSingleResult();
 		assertThat(count).isEqualTo(2L);
 
-		//ORACLE, DERBY don't like COUNT(a,b,...) 
-		//In Hibernate 4+ it works!
+		// ORACLE, DERBY don't like COUNT(a,b,...)
+		// In Hibernate 4+ it works!
 		try {
 			query = em.createQuery("SELECT COUNT(p) FROM Phone p");
 			count = (Long) query.getSingleResult();
-			//failIfDerby();
+			// failIfDerby();
 		} catch (PersistenceException px) {
 			failIfNotDerby();
 		} catch (JpaSystemException jpax) {
-			//spring exception transformed
+			// spring exception transformed
 			failIfNotDerby();
 		}
 
-		//QueryDslSearch supports SELECT COUNT(*)
+		// QueryDslSearch supports SELECT COUNT(*)
 		QPhone p = QPhone.phone;
 		QueryDslSearch search = new QueryDslSearch(em);
 		search.from(p);
 		assertThat(search.countAll()).isEqualTo(2L);
 
-		//Even in 
+		// Even in
 		PagedCriteria criteria = new PagedCriteria();
 		PagedResult<Phone> result = search.listAllPaged(p, criteria);
 		assertThat(result.getTotal()).isEqualTo(2L);
@@ -258,26 +260,23 @@ public class QueryDslTest extends BaseJpaTest {
 		QEmployee e = QEmployee.employee;
 		QueryDslSearch search = new QueryDslSearch(em);
 		search.from(e);
-		//join fetches
+		// join fetches
 		/*
-		search.joinFetch(e.address());
-		search.joinFetch(e.manager());
-		search.joinFetch(e.phones);
-		search.joinFetch(e.computers);
-		search.joinFetch(e.projects);
-		search.joinFetch(e.examinations);
-		*/
-		//string
+		 * search.joinFetch(e.address()); search.joinFetch(e.manager());
+		 * search.joinFetch(e.phones); search.joinFetch(e.computers);
+		 * search.joinFetch(e.projects); search.joinFetch(e.examinations);
+		 */
+		// string
 		search.eq(e.firstName, employee.getFirstName());
-		//integer
+		// integer
 		search.eq(e.yearsOfService, employee.getYearsOfService());
-		//date
+		// date
 		search.eq(e.period().startDate, employee.getPeriod().getStartDate());
 		search.eq(e.period().endDate, employee.getPeriod().getEndDate());
-		//entity path
+		// entity path
 		search.eq(e.address().city, employee.getAddress().getCity());
 		search.eq(e.manager(), employee.getManager());
-		//multivalue
+		// multivalue
 		search.eq(e.addressId, employee.getAddress().getId(), employee.getAddress().getId());
 
 		search.eq(e.addressId, null);
@@ -308,27 +307,24 @@ public class QueryDslTest extends BaseJpaTest {
 		QEmployee e = QEmployee.employee;
 		QueryDslSearch search = new QueryDslSearch(em);
 		search.from(e);
-		//join fetches
+		// join fetches
 		/*
-		search.joinFetch(e.address());
-		search.joinFetch(e.manager());
-		search.joinFetch(e.phones);
-		search.joinFetch(e.computers);
-		search.joinFetch(e.projects);
-		search.joinFetch(e.examinations);
-		*/
-		//string
+		 * search.joinFetch(e.address()); search.joinFetch(e.manager());
+		 * search.joinFetch(e.phones); search.joinFetch(e.computers);
+		 * search.joinFetch(e.projects); search.joinFetch(e.examinations);
+		 */
+		// string
 		search.where(e.firstName, new ValueAndOperator<String>(employee.getFirstName()));
-		//integer
+		// integer
 		search.where(e.yearsOfService, new ValueAndOperator<Integer>(employee.getYearsOfService()));
-		//dates
+		// dates
 		search.where(e.period().startDate, new ValueAndOperator<Date>(employee.getPeriod().getStartDate()));
 		search.where(e.period().endDate, new ValueAndOperator<Date>(employee.getPeriod().getEndDate()));
-		//entity path
+		// entity path
 		search.where(e.address().city, new ValueAndOperator<String>(employee.getAddress().getCity()));
 		search.where(e.manager(), new ValueAndOperator<Employee>(employee.getManager()));
 
-		//multivalue
+		// multivalue
 		search.where(e.addressId, new ValueAndOperator<Integer>(employee.getAddress().getId(), employee.getAddress()
 				.getId()));
 
@@ -356,24 +352,21 @@ public class QueryDslTest extends BaseJpaTest {
 		QEmployee e = QEmployee.employee;
 		QueryDslSearch search = new QueryDslSearch(em);
 		search.from(e);
-		//join fetches
+		// join fetches
 		/*
-		search.joinFetch(e.address());
-		search.joinFetch(e.manager());
-		search.joinFetch(e.phones);
-		search.joinFetch(e.computers);
-		search.joinFetch(e.projects);
-		search.joinFetch(e.examinations);
-		*/
-		//string
+		 * search.joinFetch(e.address()); search.joinFetch(e.manager());
+		 * search.joinFetch(e.phones); search.joinFetch(e.computers);
+		 * search.joinFetch(e.projects); search.joinFetch(e.examinations);
+		 */
+		// string
 		search.where(new StringColumnCriteria(e.firstName, employee.getFirstName()));
-		//integer
+		// integer
 		search.where(new NumberColumnCriteria<Integer>(e.yearsOfService, employee.getYearsOfService()));
-		//dates
+		// dates
 		search.where(new CompareColumnCriteria<Date>(e.period().startDate, employee.getPeriod().getStartDate()));
 		search.where(new CompareColumnCriteria<Date>(e.period().endDate, employee.getPeriod().getEndDate()));
 
-		//entity path
+		// entity path
 		search.where(new StringColumnCriteria(e.address().city, employee.getAddress().getCity()));
 		search.where(new ColumnCriteria<Employee>(e.manager(), employee.getManager()));
 
@@ -405,7 +398,7 @@ public class QueryDslTest extends BaseJpaTest {
 
 	@Test
 	public void testComplexCriteria() {
-		//TODO dokoncit test
+		// TODO dokoncit test
 		EmployeeSearchCriteria criteria = new EmployeeSearchCriteria();
 		criteria.setFirstName(new ValueAndOperator<String>(employee.getFirstName()));
 		criteria.setAddressCity(new ValueAndOperator<String>(employee.getAddress().getCity()));

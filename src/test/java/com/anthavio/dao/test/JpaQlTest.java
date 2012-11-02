@@ -1,6 +1,6 @@
 package com.anthavio.dao.test;
 
-import static org.fest.assertions.Assertions.assertThat;
+import static org.fest.assertions.api.Assertions.assertThat;
 
 import java.util.List;
 
@@ -31,7 +31,7 @@ public class JpaQlTest extends BaseJpaTest {
 		JpaQlSearch search = new JpaQlSearch();
 		search.from("Employee e");
 
-		LikeCriteria like = new LikeCriteria("imm", "mml"); //BOTH is default
+		LikeCriteria like = new LikeCriteria("imm", "mml"); // BOTH is default
 		search.like("e.lastName", like);
 		cc += 1;
 		pc += 2;
@@ -86,33 +86,36 @@ public class JpaQlTest extends BaseJpaTest {
 		int cc = 0;
 		int pc = 0;
 
-		//string
+		// string
 		search.eq("e.firstName", employee.getFirstName());
 		cc += 1;
 		pc += 1;
 
-		//integer
+		// integer
 		search.eq("e.yearsOfService", employee.getYearsOfService());
 		cc += 1;
 		pc += 1;
 
-		//dates
+		// dates
 		search.eq("e.period.startDate", employee.getPeriod().getStartDate());
 		cc += 1;
 		pc += 1;
-		search.eq("e.period.endDate", employee.getPeriod().getEndDate()); //null -> will not exist
+		search.eq("e.period.endDate", employee.getPeriod().getEndDate()); // null ->
+																																			// will
+																																			// not
+																																			// exist
 
-		//long path
+		// long path
 		search.eq("e.address.city", employee.getAddress().getCity());
 		cc += 1;
 		pc += 1;
 
-		//etity
+		// etity
 		search.eq("e.manager", employee.getManager());
 		cc += 1;
 		pc += 1;
 
-		//2 values
+		// 2 values
 		search.eq("e.addressId", employee.getAddress().getId(), employee.getAddress().getId());
 		cc += 1;
 		pc += 2;
