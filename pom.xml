@@ -79,7 +79,7 @@
 		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-api</artifactId>
-			<version>1.7.2</version>
+			<version>1.7.5</version>
 		</dependency>
 
 		<dependency>
@@ -175,14 +175,14 @@
 		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>jcl-over-slf4j</artifactId>
-			<version>1.7.2</version>
+			<version>1.7.5</version>
 			<scope>test</scope>
 		</dependency>
 		
 		<dependency>
 			<groupId>ch.qos.logback</groupId>
 			<artifactId>logback-classic</artifactId>
-			<version>1.0.9</version>
+			<version>1.0.13</version>
 			<scope>test</scope>
 		</dependency>
 
