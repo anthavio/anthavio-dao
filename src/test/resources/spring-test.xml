@@ -12,13 +12,13 @@
 
 	<ctx:annotation-config />
 	
-	<ctx:component-scan base-package="com.anthavio.dao.test" />
+	<ctx:component-scan base-package="net.anthavio.dao.test" />
 	
 	<trx:annotation-driven mode="aspectj" proxy-target-class="true"/>
 	
 	<ctx:property-placeholder location="classpath:target-derby.properties" />
 
-	<jpa:repositories base-package="com.anthavio.dao.test.sdao"/>
+	<jpa:repositories base-package="net.anthavio.dao.test.sdao"/>
 
 	<bean id="dbIgnoresCase" class="java.lang.Boolean">
 		<constructor-arg index="0" value="${database.ignoresCase}" />
